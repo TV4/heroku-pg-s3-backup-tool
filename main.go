@@ -139,7 +139,9 @@ func getLatestTransfer(apiURL, apiToken string) (num int, err error) {
 	defer resp.Body.Close()
 
 	var result []struct {
-		Num *int `json:"num"`
+		Num       *int   `json:"num"`
+		Succeeded bool   `json:"succeeded"`
+		ToName    string `json:"to_name"`
 	}
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
@@ -147,14 +149,24 @@ func getLatestTransfer(apiURL, apiToken string) (num int, err error) {
 	}
 
 	if len(result) < 1 {
-		return 0, errors.New("no elements in array")
+		return 0, errors.New("no transfers found")
 	}
 
-	if result[0].Num == nil {
-		return 0, errors.New("no num in array")
+	var found bool
+
+	for _, r := range result {
+		if r.Succeeded && r.Num != nil && (r.ToName == "BACKUP" || r.ToName == "SCHEDULED BACKUP") {
+			num = *r.Num
+			found = true
+			break
+		}
 	}
 
-	return *result[0].Num, nil
+	if !found {
+		return 0, errors.New("no backup found")
+	}
+
+	return num, nil
 }
 
 func readConfiguration() *config {
