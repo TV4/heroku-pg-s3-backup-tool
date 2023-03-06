@@ -1,3 +1,4 @@
+// Deprecated: This tool is no longer maintained.
 package main
 
 import (

@@ -1,3 +1,5 @@
+**Deprecated; this tool is no longer maintained.**
+
 # heroku-pg-s3-backup-tool
 
 This is a tool for backing up a PostgreSQL database running as a Heroku Add-on
